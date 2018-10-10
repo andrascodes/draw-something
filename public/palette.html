@@ -12,4 +12,29 @@
   Draw Something Palette
 </body>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+
+<script>
+
+  const socket = io();
+
+  const listener = (e) => {
+    console.log(e);
+
+    // Features:
+    // color change in rgba code
+    socket.emit('brush-color-change', { color: "rgba()" });
+    // background color, bg color selector mode (pressing a button), dialing, (alpha axis)
+    socket.emit('bg-color-change', { color: "rgba()" });
+    // brush size, brush size selector mode (pressing a button), moving the phone (beta axis)
+    socket.emit('brush-size-change', { size: 50 });
+    // shaking: accelerometer on the phone, sets the opacity in RGBA to 1
+    socket.emit('brush-color-change', { color: "rgba()" });
+  };
+
+  window.addEventListener('deviceorientation', listener);
+
+
+</script>
+
 </html>

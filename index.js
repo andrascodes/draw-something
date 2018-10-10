@@ -21,6 +21,11 @@ io.on('connection', socket => {
 
   console.log('a user connected');
 
+  socket.on('brush-color-change', (event) => {
+    // process data, maybe save it
+    // io.emit();
+  });
+
   socket.on('orientation-change', (event) => {
     console.log(event);
   });
