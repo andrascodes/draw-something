@@ -17,9 +17,20 @@ app.get('/palette', function (req, res) {
   res.sendFile(__dirname + '/public/palette.html');
 });
 
+// const canvases = [{
+//   id: 1,
+
+// }, ...]
+
+// const sprays = [{
+//   size: 10,
+//   color: "#hex",
+//   canvas: 1,
+// }, ...]
+
 io.on('connection', socket => {
 
-  console.log('a user connected');
+  console.log('a user connected', socket);
 
   socket.on('brush-color-change', (event) => {
     // process data, maybe save it
