@@ -17,6 +17,31 @@ app.get('/palette', function (req, res) {
   res.sendFile(__dirname + '/public/palette.html');
 });
 
+const palettes = io
+  .of('/palette')
+  .on('connection', (socket) => {
+    console.log('a user connected to palette');
+
+    socket.on('line-size-change', data => {
+      console.log(data);
+      io.emit('line-size-change', data);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('user disconnected from palette');
+    });
+  });
+
+const canvases = io
+  .of('/canvas')
+  .on('connection', (socket) => {
+    console.log('a user connected to canvas', socket);
+
+    socket.on('disconnect', () => {
+      console.log('user disconnected from canvas');
+    });
+  });
+
 // const canvases = [{
 //   id: 1,
 
@@ -27,24 +52,5 @@ app.get('/palette', function (req, res) {
 //   color: "#hex",
 //   canvas: 1,
 // }, ...]
-
-io.on('connection', socket => {
-
-  console.log('a user connected', socket);
-
-  socket.on('brush-color-change', (event) => {
-    // process data, maybe save it
-    // io.emit();
-  });
-
-  socket.on('orientation-change', (event) => {
-    console.log(event);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-
-});
 
 server.listen(PORT, () => console.log(`Draw-Something is running on: ${PORT}`));

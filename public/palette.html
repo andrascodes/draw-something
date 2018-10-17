@@ -38,23 +38,24 @@
 
 <script>
 
-  /* const socket = io();
- 
-   const listener = (e) => {
-     console.log(e);
- 
-     // Features:
-     // color change in rgba code
-     socket.emit('brush-color-change', { color: "rgba()" });
-     // background color, bg color selector mode (pressing a button), dialing, (alpha axis)
-     socket.emit('bg-color-change', { color: "rgba()" });
-     // brush size, brush size selector mode (pressing a button), moving the phone (beta axis)
-     socket.emit('brush-size-change', { size: 50 });
-     // shaking: accelerometer on the phone, sets the opacity in RGBA to 1
-     socket.emit('brush-color-change', { color: "rgba()" });
-   };
- 
-     window.addEventListener('deviceorientation', listener); */
+  const socket = io.connect('/palette');
+
+  // const listener = (e) => {
+  //   console.log(e);
+
+  //   // Features:
+  //   // color change in rgba code
+  //   socket.emit('brush-color-change', { color: "rgba()" });
+  //   // background color, bg color selector mode (pressing a button), dialing, (alpha axis)
+  //   socket.emit('bg-color-change', { color: "rgba()" });
+  //   // brush size, brush size selector mode (pressing a button), moving the phone (beta axis)
+  //   socket.emit('brush-size-change', { size: 50 });
+  //   // shaking: accelerometer on the phone, sets the opacity in RGBA to 1
+  //   socket.emit('brush-color-change', { color: "rgba()" });
+  // };
+
+  // window.addEventListener('deviceorientation', listener);
+
   var line_opasity = 1;
   var line_color = '0,0,0'
   var old_beta = 0;
@@ -109,11 +110,17 @@
     current_beta = event.beta;
     if (current_beta - old_beta > 10) {
       line_size = line_size + 10;
+
+      socket.emit('line-size-change', { size: line_size });
+
       pad.setLineSize(line_size);
       old_beta = current_beta;
       document.getElementById('feedback').value = line_size;
     } else if (old_beta - current_beta > 10 && line_size >= 10) {
       line_size = line_size - 10;
+
+      socket.emit('line-size-change', { size: line_size });
+
       pad.setLineSize(line_size);
       old_beta = current_beta;
       document.getElementById('feedback').value = line_size;

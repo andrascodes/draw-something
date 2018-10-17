@@ -1,122 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<script src="scripts/responsive-sketchpad.js"></script>
+<script src="scripts/sketchpad.js"></script>
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Draw-Something Canvas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Draw-Something Canvas</title>
 </head>
 
 <body>
-	<div id="root">
-		<label> Line Size</label>
-		<input type="number" value="50" id="line-size-input">
-		<input type="color" value="#000000" id="color-panel" />
-		<button id="undo">Undo</button>
-		<button id="redo">Redo</button>
-		<button id="clear">Clear</button>
-		<div id="sketchpad"></div>
-	</div>
+  <div id="root">
+    <label> Line Size</label>
+    <input type="number" value="1" id="line-size-input">
+    <input type="color" value="#000000" id="color-panel" />
+    <canvas id="sketchpad"></canvas>
+  </div>
 
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 
-<script>
-
-	const socket = io();
-
-	socket.on('', (event) => {
-
-	});
-
-</script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
 
 <script>
-	var line_opasity = 1;
-	var line_color = '0,0,0'
-	var old_beta = 0;
-	var current_beta = 0;
-	var line_size = 50;
-	var el = document.getElementById('sketchpad');
-	var pad = new Sketchpad(el, {
-		line: {
-			color: '#000000',
-			size: 30
-		}
-	});
 
-	document.getElementById('line-size-input').oninput = setLineSize;
-	document.getElementById('clear').onclick = clear;
-	document.getElementById('undo').onclick = undo;
-	document.getElementById('redo').onclick = redo;
-	document.getElementById('color-panel').oninput = setColor;
+  const socket = io();
 
-	setInterval(function () {
-		if (line_opasity >= 0.1) {
-			line_opasity = line_opasity - 0.1;
-			pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
-		}
-		if (current_beta - old_beta > 20) {
-			line_size = line_size - 10;
-			pad.setLineSize(line_size);
-			old_beta = current_beta;
-			document.getElementById('line-size-input').value = line_size;
-		} else if (old_beta - current_beta > 20) {
-			line_size = line_size + 10;
-			pad.setLineSize(line_size);
-			old_beta = current_beta;
-			document.getElementById('line-size-input').value = line_size;
-		}
-	}, 2000);
+  const sketchpad = new Sketchpad({
+    element: '#sketchpad',
+    width: window.innerWidth,
+    height: window.innerHeight,
+    color: '#FF0000',
+  });
 
-
-	function undo() {
-		pad.undo();
-	}
-
-	function setColor(e) {
-		line_color = hexToRgb(e.target.value);
-		line_opasity = 1;
-		pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
-	}
-
-
-	function redo() {
-		pad.redo();
-	}
-
-	function clear() {
-		pad.clear();
-	}
-
-	function setLineSize(e) {
-		line_size = e.target.value;
-		pad.setLineSize(line_size);
-	}
-
-	window.onresize = function (e) {
-		pad.resize(el.offsetWidth);
-	}
-
-	function hexToRgb(hex) {
-		var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-		if (result) {
-			var rgb = parseInt(result[1], 16) + ',' + parseInt(result[2], 16) + ',' + parseInt(result[3], 16);
-			return rgb;
-		} else {
-			return '0,0,0';
-		}
-	}
-
-	if (window.DeviceOrientationEvent) {
-		window.addEventListener("deviceorientation", function (event) {
-			current_beta = event.beta;
-		}, true);
-	}
+  socket.on('line-size-change', (event) => {
+    console.log(event);
+    sketchpad.penSize = event.size;
+    document.getElementById('line-size-input').value = event.size;
+  });
 
 </script>
-
-</html>
