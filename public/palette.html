@@ -47,6 +47,9 @@
   document.getElementById('line-size-input').ontouchstart = setLineSize;
   document.getElementById('line-size-input').ontouchend = mouseUpLineSize;
 
+  /**
+   * Every two seconds, make brush density weaker
+   */
   setInterval(function () {
     if (line_opasity >= 0.1) {
       line_opasity = line_opasity - 0.1;
@@ -55,7 +58,10 @@
     }
   }, 2000);
 
-
+  /**
+   * Sets brush colour
+   * @param {event} e - Button Press event
+   */
   function setColor(e) {
     line_opasity = 1;
     line_color = hexToRgb(e.target.value)
@@ -63,10 +69,18 @@
     socket.emit('line-color-change', { color: line_color_with_opasity });
   }
 
+  /**
+   * Sets background colour
+   * @param {event} e - Button Press event
+   */
   function setBgColor(e) {
     socket.emit('bg-color-change', { color: e.target.value });
   }
 
+  /**
+   * Converts hex colour string to rgb
+   * @param {String} hex - hex string
+   */
   function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (result) {
@@ -77,10 +91,18 @@
     }
   }
 
+  /**
+   * Listens to phone orientation to change line size
+   * @param {event} e - touch start event
+   */
   function setLineSize(e) {
     window.addEventListener("deviceorientation", handleMouseDownSize, true);
   }
 
+  /**
+   * Increases or decreases line size
+   * @param {event} e - device orientation event
+   */
   function handleMouseDownSize(event) {
     current_beta = event.beta;
     if (current_beta - old_beta > 10) {
@@ -96,12 +118,20 @@
     }
   }
 
+  /**
+   * Stops listening to phone orientation
+   * @param {event} e - touch end event
+   */
   function mouseUpLineSize(e) {
     window.removeEventListener("deviceorientation", handleMouseDownSize, true);
   }
 
   window.addEventListener("devicemotion", handleMouseDownShake, true);
 
+  /**
+   * Listens to phone acceleration or shake event
+   * @param {event} e - acceleration event
+   */
   function handleMouseDownShake(event) {
     if (event.acceleration.x > 10) {
       line_opasity = 1;
