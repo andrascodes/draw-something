@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="scripts/responsive-sketchpad.js"></script>
+<script src="scripts/sketchpad.js"></script>
 
 <head>
   <meta charset="UTF-8">
@@ -21,16 +21,12 @@
 
 <body>
   <div id="Settings">
-    <h3>Settings</h3>
-    <p> Brush Colour <span class="tab"> Background Colour</p>
+    <h3>Draw Something Palette</h3>
+    <p> Brush Colour <span class="tab" /> Background Colour</p>
     <input class="square" type="color" id="color-panel"> </input>
     <input class="square" type="color" id="bgcolor-panel"> </input>
     <button class="square" id="line-size-input"> Brush Size </button>
     <input type="number" value="50" id="feedback">
-  </div>
-  <div id="Draw" class="tabcontent">
-    <h3>Draw</h3>
-    <div id="sketchpad"></div>
   </div>
 </body>
 
@@ -40,34 +36,11 @@
 
   const socket = io.connect('/palette');
 
-  // const listener = (e) => {
-  //   console.log(e);
-
-  //   // Features:
-  //   // color change in rgba code
-  //   socket.emit('brush-color-change', { color: "rgba()" });
-  //   // background color, bg color selector mode (pressing a button), dialing, (alpha axis)
-  //   socket.emit('bg-color-change', { color: "rgba()" });
-  //   // brush size, brush size selector mode (pressing a button), moving the phone (beta axis)
-  //   socket.emit('brush-size-change', { size: 50 });
-  //   // shaking: accelerometer on the phone, sets the opacity in RGBA to 1
-  //   socket.emit('brush-color-change', { color: "rgba()" });
-  // };
-
-  // window.addEventListener('deviceorientation', listener);
-
   var line_opasity = 1;
   var line_color = '0,0,0'
   var old_beta = 0;
   var current_beta = 0;
   var line_size = 50;
-  var el = document.getElementById('sketchpad');
-  var pad = new Sketchpad(el, {
-    line: {
-      color: '#000000',
-      size: 30
-    }
-  });
 
   document.getElementById('color-panel').oninput = setColor;
   document.getElementById('bgcolor-panel').oninput = setBgColor;
@@ -77,19 +50,21 @@
   setInterval(function () {
     if (line_opasity >= 0.1) {
       line_opasity = line_opasity - 0.1;
-      pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
+      var line_color_with_opasity = 'rgba(' + line_color + ',' + line_opasity + ')';
+      socket.emit('line-color-change', { color: line_color_with_opasity });
     }
   }, 2000);
 
 
   function setColor(e) {
-    line_color = hexToRgb(e.target.value);
     line_opasity = 1;
-    pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
+    line_color = hexToRgb(e.target.value)
+    var line_color_with_opasity = 'rgba(' + line_color + ',' + line_opasity + ')';
+    socket.emit('line-color-change', { color: line_color_with_opasity });
   }
 
   function setBgColor(e) {
-    pad.setBackgroundColor(e.target.value);
+    socket.emit('bg-color-change', { color: e.target.value });
   }
 
   function hexToRgb(hex) {
@@ -110,18 +85,12 @@
     current_beta = event.beta;
     if (current_beta - old_beta > 10) {
       line_size = line_size + 10;
-
       socket.emit('line-size-change', { size: line_size });
-
-      pad.setLineSize(line_size);
       old_beta = current_beta;
       document.getElementById('feedback').value = line_size;
     } else if (old_beta - current_beta > 10 && line_size >= 10) {
       line_size = line_size - 10;
-
       socket.emit('line-size-change', { size: line_size });
-
-      pad.setLineSize(line_size);
       old_beta = current_beta;
       document.getElementById('feedback').value = line_size;
     }
@@ -135,8 +104,9 @@
 
   function handleMouseDownShake(event) {
     if (event.acceleration.x > 10) {
-      line_opasity = 1
-      pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
+      line_opasity = 1;
+      var line_color_with_opasity = 'rgba(' + line_color + ',' + line_opasity + ')';
+      socket.emit('line-color-change', { color: line_color_with_opasity });
     }
   }
 

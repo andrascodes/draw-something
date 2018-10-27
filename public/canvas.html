@@ -36,9 +36,16 @@
   });
 
   socket.on('line-size-change', (event) => {
-    console.log(event);
     sketchpad.penSize = event.size;
     document.getElementById('line-size-input').value = event.size;
+  });
+
+  socket.on('line-color-change', (event) => {
+    sketchpad.color = event.color;
+  });
+
+  socket.on('bg-color-change', (event) => {
+    sketchpad.setBackgroundColor(event.color);
   });
 
 </script>
