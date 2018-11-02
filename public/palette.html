@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="scripts/sketchpad.js"></script>
 
 <head>
@@ -14,19 +15,20 @@
 	  width: 40%;
 	}
 	.tab {
-		padding-left: 40%;
+		padding-left: 10%;
 	}
   </style>
 </head>
 
-<body>
+<body background="images/wall.jpeg">
   <div id="Settings">
     <h3>Draw Something Palette</h3>
-    <p> Brush Colour <span class="tab" /> Background Colour</p>
+    <p> <i class="fa fa-paint-brush"> Brush Colour</i>  <span class="tab" /> Background Colour</p>
     <input class="square" type="color" id="color-panel"> </input>
     <input class="square" type="color" id="bgcolor-panel"> </input>
-    <button class="square" id="line-size-input"> Brush Size </button>
-    <input type="number" value="50" id="feedback">
+    <button class="square" id="line-size-input"><b> Brush Size : </b> Press here, hold and tilt your phone on top and bottom to change the size</button>
+    <input type="number" value="50" id="feedback" />
+    <p style ="background-color: coral; padding: 0.5em"> Shake your phone side to side to refill your spray paint every 10 seconds</p>
   </div>
 </body>
 
