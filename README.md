@@ -1,6 +1,8 @@
 # Draw Something!
 Collaborative graffiti application for wall-sized displays
 
+[Try out the demo here!] (https://draw-sg.herokuapp.com/)
+
 ## Install
 `yarn install`
 
