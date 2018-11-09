@@ -74,6 +74,7 @@ function Sketchpad(config) {
 
   // Setup canvas sketching listeners
   this.reset();
+
 }
 
 //
@@ -235,8 +236,9 @@ Sketchpad.prototype.drawStroke = function(stroke) {
 };
 
 Sketchpad.prototype.redraw = function(strokes) {
-  for (var i = 0; i < strokes.length; i++) {
-    this.drawStroke(strokes[i]);
+  this.clear();
+  for (var i = 0; i < this.strokes.length; i++) {
+    this.drawStroke(this.strokes[i]);
   }
 };
 
@@ -282,6 +284,10 @@ Sketchpad.prototype.cancelAnimation = function() {
 
 Sketchpad.prototype.clear = function() {
   this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  if (this.backgroundColor) {
+      this.context.fillStyle = this.backgroundColor;
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
 };
 
 Sketchpad.prototype.undo = function() {
@@ -300,3 +306,12 @@ Sketchpad.prototype.redo = function() {
     this.drawStroke(stroke);
   }
 };
+
+ /**
+ * Set the background color
+ * @param {string} color - Hexadecimal color code
+ */
+Sketchpad.prototype.setBackgroundColor = function(color) {
+    this.backgroundColor = color;
+    this.redraw();
+}

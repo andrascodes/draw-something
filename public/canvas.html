@@ -5,15 +5,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Draw-Something Canvas</title>
 </head>
 
-<body>
+<body background="images/wall.jpeg">
   <div id="root">
-    <label> Line Size</label>
-    <input type="number" value="1" id="line-size-input">
-    <input type="color" value="#000000" id="color-panel" />
+    <h3>Draw Something Canvas</h3>
+    <label> Your brush size is </label>
+    <input type="number" value="50" id="line-size-input">
+    <button id="undo-btn">Undo <i class="fa fa-undo"></i></button>
+    <button id="redo-btn">Redo <i class="fa fa-redo"></i></button>
+    <button id="clear-btn">Clear canvas <i class="fa fa-broom"></i></button>
+
     <canvas id="sketchpad"></canvas>
   </div>
 
@@ -25,6 +30,9 @@
   crossorigin="anonymous"></script>
 
 <script>
+  document.getElementById('undo-btn').onclick = undo;
+  document.getElementById('redo-btn').onclick = redo;
+  document.getElementById('clear-btn').onclick = clear;
 
   const socket = io();
 
@@ -32,13 +40,44 @@
     element: '#sketchpad',
     width: window.innerWidth,
     height: window.innerHeight,
-    color: '#FF0000',
+    color: '#000000',
   });
 
   socket.on('line-size-change', (event) => {
-    console.log(event);
     sketchpad.penSize = event.size;
     document.getElementById('line-size-input').value = event.size;
   });
+
+  socket.on('line-color-change', (event) => {
+    sketchpad.color = event.color;
+  });
+
+  socket.on('bg-color-change', (event) => {
+    sketchpad.setBackgroundColor(event.color);
+  });
+
+  /**
+   * Undo previous action
+   * @param {event} e - Button Press event
+   */
+  function undo(e) {
+    sketchpad.undo();
+  }
+
+  /**
+   * Redo previous undone action
+   * @param {event} e - Button Press event
+   */
+  function redo(e) {
+    sketchpad.redo();
+  }
+
+  /**
+   * Clear canvas
+   * @param {event} e - Button Press event
+   */
+  function clear(e) {
+    sketchpad.clear();
+  }
 
 </script>

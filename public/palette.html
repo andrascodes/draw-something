@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="scripts/responsive-sketchpad.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="scripts/sketchpad.js"></script>
 
 <head>
   <meta charset="UTF-8">
@@ -14,23 +15,20 @@
 	  width: 40%;
 	}
 	.tab {
-		padding-left: 40%;
+		padding-left: 10%;
 	}
   </style>
 </head>
 
-<body>
+<body background="images/wall.jpeg">
   <div id="Settings">
-    <h3>Settings</h3>
-    <p> Brush Colour <span class="tab"> Background Colour</p>
+    <h3>Draw Something Palette</h3>
+    <p> <i class="fa fa-paint-brush"> Brush Colour</i>  <span class="tab" /> Background Colour</p>
     <input class="square" type="color" id="color-panel"> </input>
     <input class="square" type="color" id="bgcolor-panel"> </input>
-    <button class="square" id="line-size-input"> Brush Size </button>
-    <input type="number" value="50" id="feedback">
-  </div>
-  <div id="Draw" class="tabcontent">
-    <h3>Draw</h3>
-    <div id="sketchpad"></div>
+    <button class="square" id="line-size-input"><b> Brush Size : </b> Press here, hold and tilt your phone on top and bottom to change the size</button>
+    <input type="number" value="50" id="feedback" />
+    <p style ="background-color: coral; padding: 0.5em"> Shake your phone side to side to refill your spray paint every 10 seconds</p>
   </div>
 </body>
 
@@ -40,58 +38,51 @@
 
   const socket = io.connect('/palette');
 
-  // const listener = (e) => {
-  //   console.log(e);
-
-  //   // Features:
-  //   // color change in rgba code
-  //   socket.emit('brush-color-change', { color: "rgba()" });
-  //   // background color, bg color selector mode (pressing a button), dialing, (alpha axis)
-  //   socket.emit('bg-color-change', { color: "rgba()" });
-  //   // brush size, brush size selector mode (pressing a button), moving the phone (beta axis)
-  //   socket.emit('brush-size-change', { size: 50 });
-  //   // shaking: accelerometer on the phone, sets the opacity in RGBA to 1
-  //   socket.emit('brush-color-change', { color: "rgba()" });
-  // };
-
-  // window.addEventListener('deviceorientation', listener);
-
   var line_opasity = 1;
   var line_color = '0,0,0'
   var old_beta = 0;
   var current_beta = 0;
   var line_size = 50;
-  var el = document.getElementById('sketchpad');
-  var pad = new Sketchpad(el, {
-    line: {
-      color: '#000000',
-      size: 30
-    }
-  });
 
   document.getElementById('color-panel').oninput = setColor;
   document.getElementById('bgcolor-panel').oninput = setBgColor;
   document.getElementById('line-size-input').ontouchstart = setLineSize;
   document.getElementById('line-size-input').ontouchend = mouseUpLineSize;
 
+  /**
+   * Every two seconds, make brush density weaker
+   */
   setInterval(function () {
     if (line_opasity >= 0.1) {
       line_opasity = line_opasity - 0.1;
-      pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
+      var line_color_with_opasity = 'rgba(' + line_color + ',' + line_opasity + ')';
+      socket.emit('line-color-change', { color: line_color_with_opasity });
     }
   }, 2000);
 
-
+  /**
+   * Sets brush colour
+   * @param {event} e - Button Press event
+   */
   function setColor(e) {
-    line_color = hexToRgb(e.target.value);
     line_opasity = 1;
-    pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
+    line_color = hexToRgb(e.target.value)
+    var line_color_with_opasity = 'rgba(' + line_color + ',' + line_opasity + ')';
+    socket.emit('line-color-change', { color: line_color_with_opasity });
   }
 
+  /**
+   * Sets background colour
+   * @param {event} e - Button Press event
+   */
   function setBgColor(e) {
-    pad.setBackgroundColor(e.target.value);
+    socket.emit('bg-color-change', { color: e.target.value });
   }
 
+  /**
+   * Converts hex colour string to rgb
+   * @param {String} hex - hex string
+   */
   function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (result) {
@@ -102,41 +93,52 @@
     }
   }
 
+  /**
+   * Listens to phone orientation to change line size
+   * @param {event} e - touch start event
+   */
   function setLineSize(e) {
     window.addEventListener("deviceorientation", handleMouseDownSize, true);
   }
 
+  /**
+   * Increases or decreases line size
+   * @param {event} e - device orientation event
+   */
   function handleMouseDownSize(event) {
     current_beta = event.beta;
     if (current_beta - old_beta > 10) {
       line_size = line_size + 10;
-
       socket.emit('line-size-change', { size: line_size });
-
-      pad.setLineSize(line_size);
       old_beta = current_beta;
       document.getElementById('feedback').value = line_size;
     } else if (old_beta - current_beta > 10 && line_size >= 10) {
       line_size = line_size - 10;
-
       socket.emit('line-size-change', { size: line_size });
-
-      pad.setLineSize(line_size);
       old_beta = current_beta;
       document.getElementById('feedback').value = line_size;
     }
   }
 
+  /**
+   * Stops listening to phone orientation
+   * @param {event} e - touch end event
+   */
   function mouseUpLineSize(e) {
     window.removeEventListener("deviceorientation", handleMouseDownSize, true);
   }
 
   window.addEventListener("devicemotion", handleMouseDownShake, true);
 
+  /**
+   * Listens to phone acceleration or shake event
+   * @param {event} e - acceleration event
+   */
   function handleMouseDownShake(event) {
     if (event.acceleration.x > 10) {
-      line_opasity = 1
-      pad.setLineColor('rgba(' + line_color + ',' + line_opasity + ')');
+      line_opasity = 1;
+      var line_color_with_opasity = 'rgba(' + line_color + ',' + line_opasity + ')';
+      socket.emit('line-color-change', { color: line_color_with_opasity });
     }
   }
 

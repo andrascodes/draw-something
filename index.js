@@ -27,6 +27,16 @@ const palettes = io
       io.emit('line-size-change', data);
     });
 
+    socket.on('line-color-change', data => {
+      console.log(data);
+      io.emit('line-color-change', data);
+    });
+
+    socket.on('bg-color-change', data => {
+      console.log(data);
+      io.emit('bg-color-change', data);
+    });
+
     socket.on('disconnect', () => {
       console.log('user disconnected from palette');
     });
