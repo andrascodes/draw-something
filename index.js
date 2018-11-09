@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const socketIO = require('socket.io');
 
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.SERVER_PORT || process.env.PORT;
 
 const app = express();
 const server = require('http').Server(app);
@@ -47,16 +47,19 @@ const palettes = io
     console.log('a user connected to palette');
 
     socket.on('spray-color', ({ color }) => {
+      console.log('server' + color)
       io.emit('spray-color', {
         color: rgbaToHex(color)
       });
     });
 
     socket.on('spray-size', data => {
+      console.log('server' + data)
       io.emit('spray-size', data);
     });
 
     socket.on('bg-color', ({ color }) => {
+      console.log('server' + color)
       io.emit('bg-color', {
         color: rgbaToHex(color)
       });
@@ -72,16 +75,6 @@ const palettes = io
 
     socket.on('clear', () => {
       io.emit('clear');
-    });
-
-    socket.on('line-color-change', data => {
-      console.log(data);
-      io.emit('line-color-change', data);
-    });
-
-    socket.on('bg-color-change', data => {
-      console.log(data);
-      io.emit('bg-color-change', data);
     });
 
     socket.on('disconnect', () => {

@@ -11,7 +11,7 @@
   <title>Draw-Something Canvas</title>
 </head>
 
-<body background="images/wall.jpeg">
+<body>
   <div id="root">
     <div id="Info">
       <p id="SizeNumber">
@@ -64,9 +64,6 @@
   crossorigin="anonymous"></script>
 
 <script>
-  document.getElementById('undo-btn').onclick = undo;
-  document.getElementById('redo-btn').onclick = redo;
-  document.getElementById('clear-btn').onclick = clear;
 
   const socket = io();
 
@@ -80,6 +77,7 @@
 
   socket.on('spray-color', (event) => {
     sketchpad.color = event.color;
+    console.log(event)
     document.getElementById('Info').style.backgroundColor = event.color;
   });
 
@@ -96,6 +94,7 @@
   });
 
   socket.on('bg-color', (event) => {
+    console.log(event)
     document.getElementById('Sketchpad').style.backgroundColor = event.color;
   });
 
@@ -109,14 +108,6 @@
 
   socket.on('clear', () => {
     sketchpad.clear();
-  });
-
-  socket.on('line-color-change', (event) => {
-    sketchpad.color = event.color;
-  });
-
-  socket.on('bg-color-change', (event) => {
-    sketchpad.setBackgroundColor(event.color);
   });
 
 </script>
