@@ -32,7 +32,7 @@ function Sketchpad(config) {
     return;
   }
 
-  if (typeof(config.element) === 'string') {
+  if (typeof (config.element) === 'string') {
     this.element = $(config.element);
   }
   else {
@@ -49,10 +49,10 @@ function Sketchpad(config) {
 
   // ReadOnly sketchpads may not be modified
   this.readOnly = config.readOnly ||
-                  this.element.attr('data-readOnly') ||
-                  false;
+    this.element.attr('data-readOnly') ||
+    false;
   if (!this.readOnly) {
-      this.element.css({cursor: 'crosshair'});
+    this.element.css({ cursor: 'crosshair' });
   }
 
   // Stroke control variables
@@ -81,22 +81,22 @@ function Sketchpad(config) {
 // Private API
 //
 
-Sketchpad.prototype._cursorPosition = function(event) {
+Sketchpad.prototype._cursorPosition = function (event) {
   return {
     x: event.pageX - $(this.canvas).offset().left,
     y: event.pageY - $(this.canvas).offset().top,
   };
 };
 
-Sketchpad.prototype._draw = function(start, end, color, size) {
+Sketchpad.prototype._draw = function (start, end, color, size) {
   this._stroke(start, end, color, size, 'source-over');
 };
 
-Sketchpad.prototype._erase = function(start, end, color, size) {
+Sketchpad.prototype._erase = function (start, end, color, size) {
   this._stroke(start, end, color, size, 'destination-out');
 };
 
-Sketchpad.prototype._stroke = function(start, end, color, size, compositeOperation) {
+Sketchpad.prototype._stroke = function (start, end, color, size, compositeOperation) {
   this.context.save();
   this.context.lineJoin = 'round';
   this.context.lineCap = 'round';
@@ -116,7 +116,7 @@ Sketchpad.prototype._stroke = function(start, end, color, size, compositeOperati
 // Callback Handlers
 //
 
-Sketchpad.prototype._mouseDown = function(event) {
+Sketchpad.prototype._mouseDown = function (event) {
   this._lastPosition = this._cursorPosition(event);
   this._currentStroke.color = this.color;
   this._currentStroke.size = this.penSize;
@@ -125,7 +125,7 @@ Sketchpad.prototype._mouseDown = function(event) {
   this.canvas.addEventListener('mousemove', this._mouseMove);
 };
 
-Sketchpad.prototype._mouseUp = function(event) {
+Sketchpad.prototype._mouseUp = function (event) {
   if (this._sketching) {
     this.strokes.push($.extend(true, {}, this._currentStroke));
     this._sketching = false;
@@ -133,7 +133,7 @@ Sketchpad.prototype._mouseUp = function(event) {
   this.canvas.removeEventListener('mousemove', this._mouseMove);
 };
 
-Sketchpad.prototype._mouseMove = function(event) {
+Sketchpad.prototype._mouseMove = function (event) {
   var currentPosition = this._cursorPosition(event);
 
   this._draw(this._lastPosition, currentPosition, this.color, this.penSize);
@@ -145,7 +145,7 @@ Sketchpad.prototype._mouseMove = function(event) {
   this._lastPosition = currentPosition;
 };
 
-Sketchpad.prototype._touchStart = function(event) {
+Sketchpad.prototype._touchStart = function (event) {
   event.preventDefault();
   if (this._sketching) {
     return;
@@ -158,7 +158,7 @@ Sketchpad.prototype._touchStart = function(event) {
   this.canvas.addEventListener('touchmove', this._touchMove, false);
 };
 
-Sketchpad.prototype._touchEnd = function(event) {
+Sketchpad.prototype._touchEnd = function (event) {
   event.preventDefault();
   if (this._sketching) {
     this.strokes.push($.extend(true, {}, this._currentStroke));
@@ -167,7 +167,7 @@ Sketchpad.prototype._touchEnd = function(event) {
   this.canvas.removeEventListener('touchmove', this._touchMove);
 };
 
-Sketchpad.prototype._touchCancel = function(event) {
+Sketchpad.prototype._touchCancel = function (event) {
   event.preventDefault();
   if (this._sketching) {
     this.strokes.push($.extend(true, {}, this._currentStroke));
@@ -176,7 +176,7 @@ Sketchpad.prototype._touchCancel = function(event) {
   this.canvas.removeEventListener('touchmove', this._touchMove);
 };
 
-Sketchpad.prototype._touchLeave = function(event) {
+Sketchpad.prototype._touchLeave = function (event) {
   event.preventDefault();
   if (this._sketching) {
     this.strokes.push($.extend(true, {}, this._currentStroke));
@@ -185,7 +185,7 @@ Sketchpad.prototype._touchLeave = function(event) {
   this.canvas.removeEventListener('touchmove', this._touchMove);
 };
 
-Sketchpad.prototype._touchMove = function(event) {
+Sketchpad.prototype._touchMove = function (event) {
   event.preventDefault();
   var currentPosition = this._cursorPosition(event.changedTouches[0]);
 
@@ -202,7 +202,7 @@ Sketchpad.prototype._touchMove = function(event) {
 // Public API
 //
 
-Sketchpad.prototype.reset = function() {
+Sketchpad.prototype.reset = function () {
   // Set attributes
   this.canvas = this.element[0];
   this.canvas.width = this._width;
@@ -228,21 +228,21 @@ Sketchpad.prototype.reset = function() {
   this.canvas.addEventListener('touchleave', this._touchLeave);
 };
 
-Sketchpad.prototype.drawStroke = function(stroke) {
+Sketchpad.prototype.drawStroke = function (stroke) {
   for (var j = 0; j < stroke.lines.length; j++) {
     var line = stroke.lines[j];
     this._draw(line.start, line.end, stroke.color, stroke.size);
   }
 };
 
-Sketchpad.prototype.redraw = function(strokes) {
+Sketchpad.prototype.redraw = function (strokes) {
   this.clear();
   for (var i = 0; i < this.strokes.length; i++) {
     this.drawStroke(this.strokes[i]);
   }
 };
 
-Sketchpad.prototype.toObject = function() {
+Sketchpad.prototype.toObject = function () {
   return {
     width: this.canvas.width,
     height: this.canvas.height,
@@ -251,11 +251,11 @@ Sketchpad.prototype.toObject = function() {
   };
 };
 
-Sketchpad.prototype.toJSON = function() {
+Sketchpad.prototype.toJSON = function () {
   return JSON.stringify(this.toObject());
 };
 
-Sketchpad.prototype.animate = function(ms, loop, loopDelay) {
+Sketchpad.prototype.animate = function (ms, loop, loopDelay) {
   this.clear();
   var delay = ms;
   var callback = null;
@@ -264,7 +264,7 @@ Sketchpad.prototype.animate = function(ms, loop, loopDelay) {
     for (var j = 0; j < stroke.lines.length; j++) {
       var line = stroke.lines[j];
       callback = this._draw.bind(this, line.start, line.end,
-                                 stroke.color, stroke.size);
+        stroke.color, stroke.size);
       this.animateIds.push(setTimeout(callback, delay));
       delay += ms;
     }
@@ -276,21 +276,21 @@ Sketchpad.prototype.animate = function(ms, loop, loopDelay) {
   }
 };
 
-Sketchpad.prototype.cancelAnimation = function() {
+Sketchpad.prototype.cancelAnimation = function () {
   for (var i = 0; i < this.animateIds.length; i++) {
     clearTimeout(this.animateIds[i]);
   }
 };
 
-Sketchpad.prototype.clear = function() {
+Sketchpad.prototype.clear = function () {
   this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   if (this.backgroundColor) {
-      this.context.fillStyle = this.backgroundColor;
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillStyle = this.backgroundColor;
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 };
 
-Sketchpad.prototype.undo = function() {
+Sketchpad.prototype.undo = function () {
   this.clear();
   var stroke = this.strokes.pop();
   if (stroke) {
@@ -299,7 +299,7 @@ Sketchpad.prototype.undo = function() {
   }
 };
 
-Sketchpad.prototype.redo = function() {
+Sketchpad.prototype.redo = function () {
   var stroke = this.undoHistory.pop();
   if (stroke) {
     this.strokes.push(stroke);
@@ -307,11 +307,11 @@ Sketchpad.prototype.redo = function() {
   }
 };
 
- /**
- * Set the background color
- * @param {string} color - Hexadecimal color code
- */
-Sketchpad.prototype.setBackgroundColor = function(color) {
-    this.backgroundColor = color;
-    this.redraw();
+/**
+* Set the background color
+* @param {string} color - Hexadecimal color code
+*/
+Sketchpad.prototype.setBackgroundColor = function (color) {
+  this.backgroundColor = color;
+  this.redraw();
 }

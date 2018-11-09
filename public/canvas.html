@@ -5,24 +5,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+    crossorigin="anonymous">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Draw-Something Canvas</title>
 </head>
 
 <body background="images/wall.jpeg">
   <div id="root">
-    <h3>Draw Something Canvas</h3>
-    <label> Your brush size is </label>
-    <input type="number" value="50" id="line-size-input">
-    <button id="undo-btn">Undo <i class="fa fa-undo"></i></button>
-    <button id="redo-btn">Redo <i class="fa fa-redo"></i></button>
-    <button id="clear-btn">Clear canvas <i class="fa fa-broom"></i></button>
-
-    <canvas id="sketchpad"></canvas>
+    <div id="Info">
+      <p id="SizeNumber">
+        25
+      </p>
+    </div>
+    <canvas id="Sketchpad"></canvas>
   </div>
 
 </body>
+
+<style>
+  body {
+    margin: 0;
+  }
+
+  #Info {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    left: 10px;
+    background-color: aquamarine;
+  }
+
+  #SizeNumber {
+    position: relative;
+    bottom: 18px;
+    left: 6px;
+    color: white;
+    -webkit-text-fill-color: white;
+    /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+    font-family: "Comic Sans", "Comic Sans MS", "Chalkboard", "ChalkboardSE-Regular", sans-serif;
+    font-weight: bold;
+    font-size: 22px;
+  }
+
+  .OneDigit {
+    margin-left: 7px;
+  }
+</style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 
@@ -37,15 +71,44 @@
   const socket = io();
 
   const sketchpad = new Sketchpad({
-    element: '#sketchpad',
+    element: '#Sketchpad',
     width: window.innerWidth,
     height: window.innerHeight,
-    color: '#000000',
+    color: '#FF0000',
+    penSize: 25,
   });
 
-  socket.on('line-size-change', (event) => {
+  socket.on('spray-color', (event) => {
+    sketchpad.color = event.color;
+    document.getElementById('Info').style.backgroundColor = event.color;
+  });
+
+  socket.on('spray-size', (event) => {
     sketchpad.penSize = event.size;
-    document.getElementById('line-size-input').value = event.size;
+    const sizeNumber = document.getElementById('SizeNumber');
+    sizeNumber.innerHTML = event.size;
+    if (event.size < 10) {
+      sizeNumber.classList.add('OneDigit');
+    }
+    else {
+      sizeNumber.classList.remove('OneDigit');
+    }
+  });
+
+  socket.on('bg-color', (event) => {
+    document.getElementById('Sketchpad').style.backgroundColor = event.color;
+  });
+
+  socket.on('undo', () => {
+    sketchpad.undo();
+  });
+
+  socket.on('redo', () => {
+    sketchpad.redo();
+  });
+
+  socket.on('clear', () => {
+    sketchpad.clear();
   });
 
   socket.on('line-color-change', (event) => {
@@ -55,29 +118,5 @@
   socket.on('bg-color-change', (event) => {
     sketchpad.setBackgroundColor(event.color);
   });
-
-  /**
-   * Undo previous action
-   * @param {event} e - Button Press event
-   */
-  function undo(e) {
-    sketchpad.undo();
-  }
-
-  /**
-   * Redo previous undone action
-   * @param {event} e - Button Press event
-   */
-  function redo(e) {
-    sketchpad.redo();
-  }
-
-  /**
-   * Clear canvas
-   * @param {event} e - Button Press event
-   */
-  function clear(e) {
-    sketchpad.clear();
-  }
 
 </script>
