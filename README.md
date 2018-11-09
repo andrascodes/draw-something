@@ -1,7 +1,9 @@
 # Draw Something!
 Collaborative graffiti application for wall-sized displays
 
-[Try out the demo here!](https://draw-sg.herokuapp.com/)
+Try out the demo here:
+1. Open the [Palette](https://draw-sg.herokuapp.com/palette) with a phone.
+2. Open the [Canvas](https://draw-sg.herokuapp.com/canvas) on a tablet or desktop. 
 
 ## Install
 `yarn install`
