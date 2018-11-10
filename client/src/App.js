@@ -30,6 +30,9 @@ library.add(
   faUndoAlt, faRedoAlt
 );
 
+/**
+* Main class for the palette to select spray can properties
+*/
 class App extends Component {
 
   constructor(props) {
@@ -51,19 +54,32 @@ class App extends Component {
 
     this.currentDeviceOrientationChangeListener = undefined;
   }
-
+  
+  /**
+  * Informs the canvas to undo the last stroke action 
+  */
   onUndoClicked = () => {
     this.socketAPI.emitUndo();
   }
 
+  /**
+  * Informs the canvas to redo the last undo stroke action 
+  */
   onRedoClicked = () => {
     this.socketAPI.emitRedo();
   }
 
+  /**
+  * Informs the canvas to clear itself 
+  */
   onClearClicked = () => {
     this.socketAPI.emitClear();
   }
 
+  /**
+  * Checks if the value is between 0 to 100 and sets spray colour with current alpha value
+  * @param {number} newValue is the colour picker's slider position
+  */
   onChangeSprayColor = (newValue) => {
     let intValue = Math.floor(newValue);
     if (newValue < 0) {
@@ -84,6 +100,10 @@ class App extends Component {
     // })
   }
 
+  /**
+  * Checks if the value is between 0 to 100 and sets spray darkness or alpha value
+  * @param {number} newValue is the hue picker's slider position
+  */
   onChangeSprayDarkness = (newValue) => {
     let intValue = Math.floor(newValue);
     if (newValue < 0) {
@@ -103,6 +123,10 @@ class App extends Component {
     // })
   }
 
+  /**
+  * Checks if the value is between 0 to 100 and informs canvas about background colour
+  * @param {number} newValue is the background colour picker's slider position
+  */
   onChangeBgColor = (newValue) => {
     let intValue = Math.floor(newValue);
     if (newValue < 0) {
@@ -122,6 +146,10 @@ class App extends Component {
     // })
   }
 
+  /**
+  * Checks if the value is between 0 to 100 and sets background darkness value
+  * @param {number} newValue is the background hue picker's slider position
+  */
   onChangeBgDarkness = (newValue) => {
     let intValue = Math.floor(newValue);
     if (newValue < 0) {
@@ -141,6 +169,10 @@ class App extends Component {
     // })
   }
 
+  /**
+  * Checks if the value is between 0 to 100 and sets spray size
+  * @param {number} newValue is the spray size
+  */
   onChangeSpraySize = (newValue) => {
     let intValue = Math.floor(newValue);
     if (newValue < 0) {
@@ -160,6 +192,10 @@ class App extends Component {
     // })
   }
 
+  /**
+  * When user clicks on spray or size or background icon in palette, the slider is updated
+  * @param {Event} event is the touch or click event 
+  */
   onSelectDashItem = (event) => {
     const targetElement = event.target;
     if (
@@ -176,6 +212,10 @@ class App extends Component {
     }
   }
 
+  /**
+  * The left arrow in the bottom screen shows previous spray property
+  * Nothing happens if there is no previous property to show
+  */
   onPrevButtonClick = () => {
     if (this.state.currentActionButtonIndex <= 0) {
       return;
@@ -186,6 +226,10 @@ class App extends Component {
     }));
   }
 
+  /**
+  * The right arrow in the bottom screen shows next spray property
+  * Nothing happens if it's the last property
+  */
   onNextButtonClick = () => {
     if (this.state.currentActionButtonIndex >= this.state.actionButtons.length - 1) {
       return;
@@ -196,6 +240,11 @@ class App extends Component {
     }));
   }
 
+  /**
+  * Calls one of the spray property update method when phone is tilted up and down
+  * @param {Event} event is the phone tilt event on beta axis
+  * @param {string} keyword is the spray property that needs to be updated
+  */
   onDeviceOrientationChange = (keyword) => (event) => {
     const percent = this.convert.tiltToPercent(event.beta);
     switch (keyword) {
@@ -219,6 +268,11 @@ class App extends Component {
     }
   }
 
+  /**
+  * Creates the right slider in the middle based on the spray property selected
+  * @param {string} sliderType is spray property selected
+  * @param {object} { onChange, knobPosition, color } are references to the slider function and previous position
+  */
   renderSlider = (sliderType, { onChange, knobPosition, color }) => {
 
     switch (sliderType) {
@@ -249,6 +303,9 @@ class App extends Component {
     }
   }
 
+  /**
+  * Returns the html view for the palette
+  */
   render() {
 
     const sprayColorRGB = this.convert.colorPercentToRGB(this.state.sprayColor);

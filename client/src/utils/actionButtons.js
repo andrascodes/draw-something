@@ -1,3 +1,6 @@
+/**
+* List of spray properties with their name, id and slider types
+*/
 const actionButtons = [
   {
     id: 'spray-color',
@@ -42,6 +45,11 @@ const actionButtons = [
 
 ]
 
+/**
+* Creates a new order of the buttons at the bottom of the palette based on the top palette touch selection
+* @param {string} keyword is the object like spray, background or size
+* @param {array}  actionButtons is the property like colour or darkness 
+*/
 const orderActionButtons = (keyword, actionButtons) => {
   const orderingFunc = (a, b) => {
     if (a.number < b.number) {

@@ -20,6 +20,10 @@ app.get('/palette', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'build', 'index.html'));
 });
 
+/**
+* Convert rgba colour value to hex string
+* @param {string} rgba is a comma separated r,g,b,a string
+*/
 const rgbaToHex = (rgba) => {
 
   const componentToHex = (c) => {
@@ -41,6 +45,9 @@ const rgbaToHex = (rgba) => {
 
 }
 
+/**
+* Sending palette property updates to socket client, which is the canvas
+*/
 const palettes = io
   .of('/palette')
   .on('connection', (socket) => {
@@ -82,6 +89,9 @@ const palettes = io
     });
   });
 
+/**
+* Show console feedback when a user is connected or disconnected from a canvas 
+*/
 const canvases = io
   .of('/canvas')
   .on('connection', (socket) => {

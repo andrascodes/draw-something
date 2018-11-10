@@ -67,6 +67,9 @@
 
   const socket = io();
 
+  /**
+  * Create the canvas with default values
+  */
   const sketchpad = new Sketchpad({
     element: '#Sketchpad',
     width: window.innerWidth,
@@ -75,12 +78,21 @@
     penSize: 25,
   });
 
+  /**
+  * Listen to change in spray colour or darkness event and update it
+  * @param {Event} event is the socket event for spray colour change
+  */
   socket.on('spray-color', (event) => {
     sketchpad.color = event.color;
     console.log(event)
     document.getElementById('Info').style.backgroundColor = event.color;
   });
 
+  /**
+  * Listen to change in spray size event and update it
+  * Feedback for the spray size needs to be updated too
+  * @param {Event} event is the socket event for spray size change
+  */
   socket.on('spray-size', (event) => {
     sketchpad.penSize = event.size;
     const sizeNumber = document.getElementById('SizeNumber');
@@ -93,19 +105,32 @@
     }
   });
 
+  /**
+  * Listen to change in background colour or darkness event and update it
+  * @param {Event} event is the socket event for background colour change
+  */
   socket.on('bg-color', (event) => {
     console.log(event)
     document.getElementById('Sketchpad').style.backgroundColor = event.color;
   });
 
+  /**
+  * Listen to undo icon press in palette
+  */
   socket.on('undo', () => {
     sketchpad.undo();
   });
 
+  /**
+  * Listen to redo icon press in palette
+  */
   socket.on('redo', () => {
     sketchpad.redo();
   });
 
+  /**
+  * Listen to clear icon press in palette
+  */
   socket.on('clear', () => {
     sketchpad.clear();
   });

@@ -1,5 +1,8 @@
 import React from 'react';
-
+/**
+* Size slider is the slider in the middle of the palette which changes spray size
+* @param {object} props is the reference to previous slider position, size and methods for onchange events
+*/
 const SizeSlider = (props) => {
 
   const getSliderWidth = () => document.querySelector('.ToolSlide').clientWidth;

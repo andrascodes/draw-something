@@ -1,5 +1,8 @@
 import React from 'react';
-
+/**
+* Color picker is the colour slider in the middle of the palette which changes background or spray colour
+* @param {object} props is the reference to previous slider position, colour and methods for onchange events
+*/
 const ColorPicker = (props) => {
 
   const getSliderWidth = () => document.querySelector('.ToolSlide').clientWidth;

@@ -1,5 +1,8 @@
 import React from 'react';
-
+/**
+* Alpha slider is the colour slider in the middle of the palette which changes background or spray darkness
+* @param {object} props is the reference to previous slider position, colour and methods for onchange events
+*/
 const AlphaSlider = (props) => {
 
   const getSliderWidth = () => document.querySelector('.ToolSlide').clientWidth;

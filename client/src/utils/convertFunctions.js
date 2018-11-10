@@ -1,3 +1,7 @@
+/**
+* Converts the phone beta orientation value to a number between 0 to 100
+* @param {number} tilt is the beta value of the phone orientation
+*/
 const tiltToPercent = (tilt) => {
   if (tilt < 25) {
     return 0;
@@ -10,10 +14,18 @@ const tiltToPercent = (tilt) => {
   }
 }
 
+/**
+* Converts the slider value for spray size to 1 to 50
+* @param {number} percent is the slider value 
+*/
 const percentToSpraySize = (percent) => {
   return Math.floor(1 + percent / 100 * 49);
 }
 
+/**
+* Converts the slider value for colour to rgb
+* @param {number} percent is the slider value 
+*/
 const colorPercentToRGB = (percent) => {
   if (percent < 0 || percent > 100) {
     return { r: 255, g: 0, b: 0 };
@@ -70,6 +82,11 @@ const colorPercentToRGB = (percent) => {
   }
 }
 
+/**
+* Combines the rgb value and darkness values to rgba
+* @param {object} { r, g, b } is the rgb value 
+* @param {number} darkness is the alpha value 
+*/
 const rgbAndDarknessToRGBA = ({ r, g, b }, darkness) => {
   if (darkness < 0) {
     return `rgba(255, 255, 255, 1.0)`;
